@@ -1,28 +1,27 @@
-const path = require("path");
-const webpack = require("webpack");
-const HtmlwebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
 const ROOT_PATH = path.resolve(__dirname);
-const APP_PATH = path.resolve(ROOT_PATH, 'app');
+const DEV_PATH = path.resolve(ROOT_PATH, 'src');
 const BUILD_PATH = path.resolve(ROOT_PATH, 'build');
-const TEM_PATH = path.resolve(APP_PATH, 'templates');
 
 module.exports = {
 
   entry: {
-    app: path.resolve(APP_PATH, "app.js")
+    main: path.resolve(DEV_PATH, 'main.js')
   },
 
   output: {
     path: BUILD_PATH,
-    filename: "bundle.js"
+    publicPath: '/build/',
+    filename: 'build.js'
   },
 
-  // devtool: 'eval-source-map',
+  devtool: 'eval-source-map',
 
   devServer: {
     historyApiFallback: true,
-    // hot: true,
     compress: true,
+    noInfo: true,
     port: 8888
   },
 
@@ -30,35 +29,51 @@ module.exports = {
 
     rules: [
       {
-        test: /\.jsx?$/,
-        use: "babel-loader",
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            'scss': 'vue-style-loader!css-loader!sass-loader'
+          },
+          postcss: [require('autoprefixer')({ browsers: ['last 2 versions', '> 1% in CN'] })]
+        }
       },
       {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/
       },
       {
-        test: /\.scss$/,
-        use: ["style-loader", "css-loader", "sass-loader"],
-        include: APP_PATH
-      },
-      {
-        test: /\.(png|jpg)$/,
-        use: "url-loader?limit=40000"
+        test: /\.(png|jpg|gif|svg)$/,
+        use: 'url-loader?limit=40000'
       }
     ]
   },
 
   resolve: {
-    extensions: [".js", ".jsx"]
+    alias: {
+      'vue$': 'vue/dist/vue.common.js'
+    }
   },
 
-  plugins: [
-
-    // new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js'),
-    new HtmlwebpackPlugin({
-      template: path.resolve(APP_PATH, "index.html"),
-      inject: "body"
-    })
-  ]
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.devtool = '#source-map';
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"'
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+      compress: {
+        warnings: false
+      }
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
+  ])
+}
