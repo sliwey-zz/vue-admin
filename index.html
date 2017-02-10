@@ -5,7 +5,12 @@
     <title>Vue</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="root">
+      <p>{{ message }}</p>
+      <p>{{ reverse }}</p>
+      <p v-if="seen">hahah</p>
+      <todo-item></todo-item>
+    </div>
     <script src="/build/build.js"></script>
   </body>
 </html>
