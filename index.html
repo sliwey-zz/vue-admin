@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cmn-Hans">
   <head>
     <meta charset="utf-8">
     <title>Vue</title>
   </head>
   <body>
     <div id="root">
-      <p>{{ message }}</p>
-      <p>{{ reverse }}</p>
-      <p v-if="seen">hahah</p>
-      <todo-item></todo-item>
+      <router-view></router-view>
     </div>
     <script src="/build/build.js"></script>
   </body>

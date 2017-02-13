@@ -1,5 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
+const autoprefixer = require('autoprefixer');
+const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const ROOT_PATH = path.resolve(__dirname);
 const DEV_PATH = path.resolve(ROOT_PATH, 'src');
 const BUILD_PATH = path.resolve(ROOT_PATH, 'build');
@@ -35,7 +37,7 @@ module.exports = {
           loaders: {
             'scss': 'vue-style-loader!css-loader!sass-loader'
           },
-          postcss: [require('autoprefixer')({ browsers: ['last 2 versions', '> 1% in CN'] })]
+          postcss: [autoprefixer({ browsers: ['last 2 versions', '> 1% in CN'] })]
         }
       },
       {
@@ -44,8 +46,30 @@ module.exports = {
         exclude: /node_modules/
       },
       {
+        test: /\.css$/,
+        use: ExtractTextWebpackPlugin.extract({
+          fallback: 'style-loader',
+          loader: 'css-loader'
+        })
+      },
+      {
+        test: /\.scss$/,
+        use: ExtractTextWebpackPlugin.extract({
+          fallback: 'style-loader',
+          loader: 'css-loader!postcss-loader!sass-loader'
+        })
+      },
+      {
         test: /\.(png|jpg|gif|svg)$/,
         use: 'url-loader?limit=40000'
+      },
+      {
+        test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        use: 'url-loader'
+      },
+      {
+        test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
+        use: 'file-loader'
       }
     ]
   },
@@ -55,6 +79,10 @@ module.exports = {
       'vue$': 'vue/dist/vue.common.js'
     }
   },
+
+  plugins: [
+    new ExtractTextWebpackPlugin('styles.css')
+  ]
 
 };
 
