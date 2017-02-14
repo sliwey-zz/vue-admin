@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 const ROOT_PATH = path.resolve(__dirname);
 const DEV_PATH = path.resolve(ROOT_PATH, 'src');
@@ -14,7 +15,6 @@ module.exports = {
 
   output: {
     path: BUILD_PATH,
-    publicPath: '/build/',
     filename: 'build.js'
   },
 
@@ -35,28 +35,32 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           loaders: {
-            'scss': 'vue-style-loader!css-loader!sass-loader'
+            // 'scss': 'vue-style-loader!css-loader!sass-loader'
+            'scss': ExtractTextWebpackPlugin.extract({
+              fallback: 'vue-style-loader',
+              use: ['css-loader', 'postcss-loader', 'sass-loader']
+            })
           },
-          postcss: [autoprefixer({ browsers: ['last 2 versions', '> 1% in CN'] })]
+          // postcss: [autoprefixer({ browsers: ['last 2 versions', '> 1% in CN'] })]
         }
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        use: 'babel-loader',
         exclude: /node_modules/
       },
       {
         test: /\.css$/,
         use: ExtractTextWebpackPlugin.extract({
           fallback: 'style-loader',
-          loader: 'css-loader'
+          use: 'css-loader'
         })
       },
       {
         test: /\.scss$/,
         use: ExtractTextWebpackPlugin.extract({
           fallback: 'style-loader',
-          loader: 'css-loader!postcss-loader!sass-loader'
+          use: ['css-loader', 'postcss-loader', 'sass-loader']
         })
       },
       {
@@ -75,13 +79,20 @@ module.exports = {
   },
 
   resolve: {
+    extensions: ['.js', '.vue'],
     alias: {
       'vue$': 'vue/dist/vue.common.js'
     }
   },
 
   plugins: [
-    new ExtractTextWebpackPlugin('styles.css')
+
+    new HtmlWebpackPlugin({
+      template: path.resolve(ROOT_PATH, 'index.html'),
+      inject: 'body'
+    }),
+
+    new ExtractTextWebpackPlugin('style.css')
   ]
 
 };
