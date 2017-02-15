@@ -35,13 +35,11 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           loaders: {
-            // 'scss': 'vue-style-loader!css-loader!sass-loader'
             'scss': ExtractTextWebpackPlugin.extract({
               fallback: 'vue-style-loader',
               use: ['css-loader', 'postcss-loader', 'sass-loader']
             })
-          },
-          // postcss: [autoprefixer({ browsers: ['last 2 versions', '> 1% in CN'] })]
+          }
         }
       },
       {
@@ -65,7 +63,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        use: 'url-loader?limit=40000'
+        use: 'url-loader?limit=10000'
       },
       {
         test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -88,7 +86,7 @@ module.exports = {
   plugins: [
 
     new HtmlWebpackPlugin({
-      template: path.resolve(ROOT_PATH, 'index.html'),
+      template: path.resolve(DEV_PATH, 'index.html'),
       inject: 'body'
     }),
 
