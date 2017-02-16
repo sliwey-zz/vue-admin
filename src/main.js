@@ -10,6 +10,7 @@ import User from './pages/user/user';
 Vue.use(Vuex);
 Vue.use(VueRouter);
 
+
 const COUNT_ADD = 'add';
 
 const moduleA = {
