@@ -1,16 +1,34 @@
 <template>
   <div class="home">
-    <p>I'm Home.{{ count }} {{number}}</p>
-    <p>{{ odd }}</p>
-    <button type="button" v-on:click="add(1)">Add 1</button>
-    <button type="button" v-on:click="add(2)">Add 2</button>
-    <button type="button" v-on:click="asyncAdd(3)">Add async</button>
+    <h3>司机</h3>
+    <ul>
+      <li>
+        <span>正班：{{ full }}</span>
+        <button type="button" v-on:click="driverFullAdd({number:1})">+</button>
+        <button type="button" v-on:click="driverFullMinus(1)">-</button>
+      </li>
+      <li>
+        <span>代班：{{ part }}</span>
+        <button type="button" v-on:click="driverPartAdd({number:1})">+</button>
+        <button type="button" v-on:click="driverPartAdd({number:-1})">-</button>
+      </li>
+      <li>总数：{{ driverTotal }}</li>
+    </ul>
+    <h3>车辆</h3>
+    <ul>
+      <li>空车：{{ empty }}<button type="button" v-on:click="vehicleEmptyAdd({number:1})">+</button></li>
+      <li>任务车：{{ task }}<button type="button" v-on:click="vehicleTaskAdd({number:1})">+</button></li>
+      <li>重车：{{ heavy }}<button type="button" v-on:click="vehicleHeavyAdd({number:1})">+</button></li>
+      <li>离线：{{ offline }}<button type="button" v-on:click="vehicleOfflineAdd({number:1})">+</button></li>
+      <li>总数：{{ vehicleTotal }}</li>
+    </ul>
+    <button type="button" v-on:click="asyncVehicleAdd">Add async</button>
     <router-link to="/user">User</router-link>
   </div>
 </template>
 
 <script>
-
+import * as Types from '../../store/mutation-types';
 import { mapState } from 'vuex';
 import { mapGetters } from 'vuex';
 import { mapMutations } from 'vuex';
@@ -22,40 +40,38 @@ export default {
       a: 1
     }
   },
-  // computed: mapState({
-  //   count: state => state.count,
-  //   countAlias: 'count',
-  //   countPlusLocalState (state) {
-  //     return state.count + this.localCount;
-  //   }
-  // }),
   computed: {
     number () {
       return this.a + this.count;
     },
-    // oddItem () {
-    //   return this.$store.getters.oddItem;
-    // },
-    count () {
-      return this.$store.state.a.count;
-    },
-    ...mapGetters({
-      odd: 'oddItem'
+    ...mapState({
+      full: state => state.drivers.full,
+      part: state => state.drivers.part,
+      empty: state => state.vehicles.empty,
+      task: state => state.vehicles.task,
+      heavy: state => state.vehicles.heavy,
+      offline: state => state.vehicles.offline
     }),
-    // ...mapState([
-    //   'count'
-    // ])
+    ...mapGetters([
+      'driverTotal',
+      'vehicleTotal'
+    ])
   },
   methods: {
-    haha () {
-
+    driverFullMinus (number) {
+      this.$store.commit(Types.DRIVER_FULL_ADD, { number: -number });
     },
-    ...mapMutations([
-      'add'
-    ]),
-    ...mapActions({
-      asyncAdd: 'add'
-    })
+    ...mapMutations({
+      driverFullAdd: Types.DRIVER_FULL_ADD,
+      driverPartAdd: Types.DRIVER_PART_ADD,
+      vehicleEmptyAdd: Types.VEHICLE_EMPTY_ADD,
+      vehicleTaskAdd: Types.VEHICLE_TASK_ADD,
+      vehicleHeavyAdd: Types.VEHICLE_HEAVY_ADD,
+      vehicleOfflineAdd: Types.VEHICLE_OFFLINE_ADD,
+    }),
+    ...mapActions([
+      'asyncVehicleAdd'
+    ])
   }
 }
 </script>
